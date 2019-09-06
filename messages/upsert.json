@@ -1,0 +1,22 @@
+{
+  "commandDescription": "This command perform an upsert request of JSON array file resolving lookup with other records",
+  "nameFlagDescription": "name to print",
+  "sobjectFlagDescription": "sobjectFlagDescription",
+  "chunksizeFlagDescription": "chunksizeFlagDescription",
+  "resultformatFlagDescription": "resultformatFlagDescription",
+  "queryFlagDescription": "queryFlagDescription",
+  "filenameFlagDescription": "filenameFlagDescription",
+  "forceFlagDescription": "example boolean flag",
+  "jobidFlagDescription": "job id of bulk job",
+  "batchidFlagDescription": "bulk id of bulk job",
+  "errorNoOrgResults": "No results found for the org '%s'.",
+  "destinationdirFlagDescription": "destinationdirFlagDescription",
+  "limitFlagDescription": "limitFlagDescription",
+  "whereclauseFlagDescription": "whereclauseFlagDescription",
+  "configfileFlagDescription": "configfileFlagDescription",
+  "jsonfile": "JSON file with records to load",
+  "sobject": "SObject name to upsert",
+  "externalid": "External id field for upsert operations",
+  "errorNoRecordsInFile": "No records load from file '%s'",
+  "errorNoDescribeSobject": "Unable to describe '%s'"
+}
