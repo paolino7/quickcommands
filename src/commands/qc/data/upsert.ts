@@ -116,30 +116,35 @@ export default class Upsert extends SfdxCommand {
     }
 
     //3. Upsert records 
-    const result: Partial<UpsertResult> | Partial<UpsertResult>[] = await conn.upsert(sobject, records, externalId);
+    // FIXME: is not allowed to change maxRequest (ref https://salesforce.stackexchange.com/questions/275145/how-to-set-maxrequest-in-sfdx-plugin-error-exceeded-max-limit-of-concurrent-ca) so this is a WA
+    const _maxRequest = conn.maxRequest;
+    let result: Partial<UpsertResult>[] = [];
+    let recordProcessed = 0;
+    while (recordProcessed < records.length) {
+      const upsertRecords = records.slice(recordProcessed, recordProcessed + _maxRequest);
+      const partialResult: Partial<UpsertResult> | Partial<UpsertResult>[] = await conn.upsert(sobject, upsertRecords, externalId);
+      if (Array.isArray(partialResult)) {
+        result = result.concat(partialResult);
+      } else {
+        result.push(partialResult);
+      }
+      recordProcessed += _maxRequest;
+    }
+
 
     const outputColumns: Partial<TableColumn>[] = [{key: 'id', label: 'ID'}, {key: 'success', label: 'Success'},{key: 'errors', label: 'Errors'}, {key: 'created', label: 'Created'}];
     
     const outputs: UpsertResult[] = [];
     
     //FIXME: Manage better!
-    if (Array.isArray(result)) {
-      result.forEach(res => {
-        outputs.push({
-          id: res.id,
-          success: res.success,
-          errors: res.errors,
-          created: res.created
-        });
-      });
-    } else {
+    result.forEach(res => {
       outputs.push({
-        id: result.id,
-        success: result.success,
-        errors: result.errors,
-        created: result.created
+        id: res.id,
+        success: res.success,
+        errors: res.errors,
+        created: res.created
       });
-    }
+    });
     
     //TODO: Use better outputs
     this.ux.log(`#### [${outputs.length}] records processed on ${sobject}`);
