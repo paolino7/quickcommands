@@ -104,12 +104,16 @@ export default class Upsert extends SfdxCommand {
       const record = records[index];
       for (let j = 0; j < lookupFields.length; j++) {
         const field = lookupFields[j];
-        const transcodeObj: LookupResolver = record[field.name];
+        const transcodeObj = record[field.relationshipName];
         if (transcodeObj) {
-          const idResolved = await conn.query(`SELECT Id FROM ${field.referenceTo[0]} WHERE ${transcodeObj.externalApiName} = '${transcodeObj.value}'`);
+          delete transcodeObj['attributes'];
+          const externalIdField = Object.keys(transcodeObj)[0];
+          const externalIdValue = transcodeObj[externalIdField];
+          const idResolved = await conn.query(`SELECT Id FROM ${field.referenceTo[0]} WHERE ${externalIdField} = '${externalIdValue}'`);
           if (idResolved.done && idResolved.records && idResolved.records.length > 0) {
             const idResult: Partial<QueryResult> = idResolved.records[0];
             record[field.name] = idResult.Id;
+            delete record[field.relationshipName];
           }
         }
       }
