@@ -62,23 +62,6 @@ export default class Upsert extends SfdxCommand {
     const externalId = this.flags.externalid;
 
     const fileContent = readFileSync(jsonfile, 'utf-8');
-    /*const records = {
-        "Name": "VS_NotAvailable",
-        "SBQQ__Active__c": true,
-        "SBQQ__AdvancedCondition__c": null,
-        "SBQQ__ConditionsMet__c": "All",
-        "SBQQ__ErrorMessage__c": "VendiloSubito is not available",
-        "SBQQ__EvaluationEvent__c": "Always",
-        "SBQQ__EvaluationOrder__c": null,
-        "SBQQ__LookupMessageField__c": null,
-        "SBQQ__LookupObject__c": null,
-        "SBQQ__LookupProductField__c": null,
-        "SBQQ__LookupRequiredField__c": null,
-        "SBQQ__LookupTypeField__c": null,
-        "SBQQ__Scope__c": "Quote",
-        "SBQQ__Type__c": "Validation",
-        "ExternalId__c": "VS_NotAvailable"
-      };*/
     
     const records = JSON.parse(fileContent);
     
