@@ -98,6 +98,8 @@ export default class Upsert extends SfdxCommand {
             record[field.name] = idResult.Id;
             delete record[field.relationshipName];
           }
+        } else if (transcodeObj === null) {
+          delete record[field.relationshipName];
         }
       }
     }
