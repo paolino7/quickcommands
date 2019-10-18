@@ -45,8 +45,11 @@
     "commands": "./lib/commands",
     "bin": "sfdx",
     "topics": {
-      "hello": {
-        "description": "Commands to say hello."
+      "user": {
+        "description": "Commands to work with users."
+      },
+      "data": {
+        "description": "Commands to work with data"
       }
     },
     "devPlugins": [

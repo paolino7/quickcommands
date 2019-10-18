@@ -1,22 +1,21 @@
 import { flags, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError } from '@salesforce/core';
-import { AnyJson, toAnyJson } from '@salesforce/ts-types';
+import { Messages, SfdxError, User, UserFields } from '@salesforce/core';
+import { AnyJson } from '@salesforce/ts-types';
 import { readFileSync } from 'fs';
-import { TableColumn } from 'cli-ux/lib/styled/table';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
 
 // Load the specific messages for this file. Messages from @salesforce/command, @salesforce/core,
 // or any library that is using the messages framework can also be loaded this way.
-const messages = Messages.loadMessages('quickcommands', 'data');
+const messages = Messages.loadMessages('quickcommands', 'user');
 
-export default class Upsert extends SfdxCommand {
+export default class Create extends SfdxCommand {
 
   public static description = messages.getMessage('commandDescription');
 
   public static examples = [
-  `$ sfdx qc:data:upsert --jsonfile config-cpq/SBQQ__ErrorCondition__c.json --sobject SBQQ__ErrorCondition__c --externalid ExternalId__c --targetusername myOrg@example.com
+  `$ sfdx qc:user:create --jsonfile config-cpq/SBQQ__ErrorCondition__c.json --sobject SBQQ__ErrorCondition__c --externalid ExternalId__c --targetusername myOrg@example.com
   Hello world! This is org: MyOrg and I will be around until Tue Mar 20 2018!
   My hub org id is: 00Dxx000000001234
   `
@@ -26,9 +25,7 @@ export default class Upsert extends SfdxCommand {
 
   protected static flagsConfig = {
     // flag with a value (-n, --name=VALUE)
-    jsonfile: flags.filepath({char: 'f', description: messages.getMessage('jsonfile'), required: true}),
-    sobject: flags.string({char: 's', description: messages.getMessage('sobject'), required: true}),
-    externalid: flags.string({char: 'i', description: messages.getMessage('externalid'), required: true})
+    jsonfile: flags.filepath({char: 'f', description: messages.getMessage('jsonfile'), required: true})
   };
 
   // Comment this out if your command does not require an org username
@@ -39,31 +36,67 @@ export default class Upsert extends SfdxCommand {
 
   public async run(): Promise<AnyJson> {
 
-    interface UpsertResult {
-      id: string;
-      success: boolean;
-      errors: any[];
-      created: boolean;
-    }
-
-    interface QueryResult {
-      Id: string;
+    interface UserRecord {
+      username: string;
+      email: string;
+      profile: string;
+      role: string;
+      timeZoneSidKey: string;
+      localeSidKey: string;
+      emailEncodingKey: string;
+      languageLocaleKey: string;
     }
 
     // this.org is guaranteed because requiresUsername=true, as opposed to supportsUsername
     const conn = this.org.getConnection();
     const jsonfile = this.flags.jsonfile;
-    const sobject = this.flags.sobject;
-    const externalId = this.flags.externalid;
 
     const fileContent = readFileSync(jsonfile, 'utf-8');
     
-    const records = JSON.parse(fileContent);
+    const records: UserRecord[] = JSON.parse(fileContent);
     
     if(!records) {
       throw new SfdxError(messages.getMessage('errorNoRecordsInFile', [jsonfile]));
     }
+
+    const profileMap: Map<String, String> = new Map<String, String>();
+    const roleMap: Map<String, String> = new Map<String, String>();
+
+    records.forEach( user => {
+        profileMap.set(user.profile, null);
+        roleMap.set(user.role, null);
+    });
+
+    const qResultProfiles = await conn.query(`SELECT Id, Name FROM Profile WHERE Name IN ('${records.map(user => user.profile).join('\',\'')}') `);
+    const profileMapper = qResultProfiles.records;
+
+    const qResultRoles = await conn.query(`SELECT Id, Name FROM UserRole WHERE Name IN ('${records.map(user => user.role).join('\',\'')}') `);
+    const roleMapper = qResultRoles.records;
+
+    const sfdcUsers: UserFields[] = records.map(user => {
+      const profileObj: any = profileMapper.find((elem, val, idx) => {return (elem as any).Name === user.profile});
+      const roleObj: any = roleMapper.find((elem, val, idx) => {return (elem as any).Name === user.role});
+      console.log("profile", user.profile, "profile mapped",profileObj, user.role, "role mapped", roleObj);
+
+      return {
+        id: null,
+        username: user.username,
+        lastName: "pippo",
+        alias: "p",
+        timeZoneSidKey: user.timeZoneSidKey,
+        localeSidKey: user.localeSidKey,
+        emailEncodingKey: user.emailEncodingKey,
+        profileId: profileObj.Id,
+        languageLocaleKey: user.languageLocaleKey,
+        email: user.email,
+        userRoleId: roleObj ? roleObj.Id : null
+      }
+    });
+
+    const userResult = await conn.create('User', sfdcUsers);
+    console.log(JSON.stringify(userResult));
     
+    /*
     const describeSobject = await conn.describe(sobject);
 
     if (!describeSobject) {
@@ -101,7 +134,7 @@ export default class Upsert extends SfdxCommand {
 
     //3. Upsert records 
     // FIXME: is not allowed to change maxRequest (ref https://salesforce.stackexchange.com/questions/275145/how-to-set-maxrequest-in-sfdx-plugin-error-exceeded-max-limit-of-concurrent-ca) so this is a WA
-    const _maxRequest = (conn as any).maxRequest;
+    const _maxRequest = conn.maxRequest;
     let result: Partial<UpsertResult>[] = [];
     let recordProcessed = 0;
     while (recordProcessed < records.length) {
@@ -134,7 +167,8 @@ export default class Upsert extends SfdxCommand {
     this.ux.log(`#### [${outputs.length}] records processed on ${sobject}`);
     this.ux.table(outputs, {colSep: '|', columns: outputColumns});
 
+    */
     // Return an object to be displayed with --json
-    return { sobject:sobject, records: toAnyJson(outputs) };
+    return { };
   }
 }
