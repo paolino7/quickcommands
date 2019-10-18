@@ -1,7 +1,8 @@
 import { flags, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError, User, UserFields } from '@salesforce/core';
+import { Messages, SfdxError, User, UserFields, Org } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
 import { readFileSync } from 'fs';
+import { TableColumn } from 'cli-ux/lib/styled/table';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
@@ -37,6 +38,9 @@ export default class Create extends SfdxCommand {
   public async run(): Promise<AnyJson> {
 
     interface UserRecord {
+      alias: string;
+      lastName: string;
+      firstName: string;
       username: string;
       email: string;
       profile: string;
@@ -73,102 +77,66 @@ export default class Create extends SfdxCommand {
     const qResultRoles = await conn.query(`SELECT Id, Name FROM UserRole WHERE Name IN ('${records.map(user => user.role).join('\',\'')}') `);
     const roleMapper = qResultRoles.records;
 
+    const orgValues = this.org.getFields([Org.Fields.ALIAS, Org.Fields.CREATED, Org.Fields.ORG_ID, Org.Fields.STATUS, Org.Fields.INSTANCE_URL]);
+    
+    
+    let sandboxAlias;
+    try {
+      sandboxAlias = orgValues.instanceUrl.toString();
+      sandboxAlias = sandboxAlias.split('--')[1];
+      sandboxAlias= sandboxAlias.split('.')[0];
+      
+    } catch (error) {
+      //FIXME: 
+    }
+
     const sfdcUsers: UserFields[] = records.map(user => {
       const profileObj: any = profileMapper.find((elem, val, idx) => {return (elem as any).Name === user.profile});
       const roleObj: any = roleMapper.find((elem, val, idx) => {return (elem as any).Name === user.role});
-      console.log("profile", user.profile, "profile mapped",profileObj, user.role, "role mapped", roleObj);
-
+      const username = sandboxAlias ? user.username.concat('.',sandboxAlias) : user.username;
+      
       return {
         id: null,
-        username: user.username,
-        lastName: "pippo",
-        alias: "p",
+        username: username,
+        lastName: user.lastName,
+        firstName: user.firstName,
+        alias: user.alias,
         timeZoneSidKey: user.timeZoneSidKey,
         localeSidKey: user.localeSidKey,
         emailEncodingKey: user.emailEncodingKey,
-        profileId: profileObj.Id,
+        profileId: profileObj? profileObj.Id: null,
         languageLocaleKey: user.languageLocaleKey,
         email: user.email,
         userRoleId: roleObj ? roleObj.Id : null
       }
     });
 
-    const userResult = await conn.create('User', sfdcUsers);
-    console.log(JSON.stringify(userResult));
-    
-    /*
-    const describeSobject = await conn.describe(sobject);
-
-    if (!describeSobject) {
-      throw new SfdxError(messages.getMessage('errorNoDescribeSobject', [sobject]));
-    }
-    
-    const lookupFields = [];
-    describeSobject.fields.forEach(field => {
-      if (field.type === 'reference') {
-        lookupFields.push(field);
+    const result: any[] = new Array();
+    for (let i = 0; i < sfdcUsers.length; i++) {
+      const sfdcUser = sfdcUsers[i];
+      try {
+        const userResult = await conn.create('User', sfdcUser);
+        console.log(JSON.stringify(userResult));
+        result.push({
+          username: sfdcUser.username,
+          success: (userResult as any).success
+        });
+  
+      } catch (error) {
+        result.push({
+          username: sfdcUser.username,
+          errors: `${error.errorCode}  ${JSON.stringify(error.fields)}`
+        });
       }
-    });
-    
-
-    for (let index = 0; index < records.length; index++) {
-      const record = records[index];
-      for (let j = 0; j < lookupFields.length; j++) {
-        const field = lookupFields[j];
-        const transcodeObj = record[field.relationshipName];
-        if (transcodeObj) {
-          delete transcodeObj['attributes'];
-          const externalIdField = Object.keys(transcodeObj)[0];
-          const externalIdValue = transcodeObj[externalIdField];
-          const idResolved = await conn.query(`SELECT Id FROM ${field.referenceTo[0]} WHERE ${externalIdField} = '${externalIdValue}'`);
-          if (idResolved.done && idResolved.records && idResolved.records.length > 0) {
-            const idResult: Partial<QueryResult> = idResolved.records[0];
-            record[field.name] = idResult.Id;
-            delete record[field.relationshipName];
-          }
-        } else if (transcodeObj === null) {
-          delete record[field.relationshipName];
-        }
-      }
+      
     }
 
-    //3. Upsert records 
-    // FIXME: is not allowed to change maxRequest (ref https://salesforce.stackexchange.com/questions/275145/how-to-set-maxrequest-in-sfdx-plugin-error-exceeded-max-limit-of-concurrent-ca) so this is a WA
-    const _maxRequest = conn.maxRequest;
-    let result: Partial<UpsertResult>[] = [];
-    let recordProcessed = 0;
-    while (recordProcessed < records.length) {
-      const upsertRecords = records.slice(recordProcessed, recordProcessed + _maxRequest);
-      const partialResult: Partial<UpsertResult> | Partial<UpsertResult>[] = await conn.upsert(sobject, upsertRecords, externalId);
-      if (Array.isArray(partialResult)) {
-        result = result.concat(partialResult);
-      } else {
-        result.push(partialResult);
-      }
-      recordProcessed += _maxRequest;
-    }
-
-
-    const outputColumns: Partial<TableColumn>[] = [{key: 'id', label: 'ID'}, {key: 'success', label: 'Success'},{key: 'errors', label: 'Errors'}, {key: 'created', label: 'Created'}];
-    
-    const outputs: UpsertResult[] = [];
-    
-    //FIXME: Manage better!
-    result.forEach(res => {
-      outputs.push({
-        id: res.id,
-        success: res.success,
-        errors: res.errors,
-        created: res.created
-      });
-    });
+    const outputColumns: Partial<TableColumn>[] = [{key: 'username', label: 'Username'}, {key: 'success', label: 'Success'},{key: 'errors', label: 'Errors'}];
     
     //TODO: Use better outputs
-    this.ux.log(`#### [${outputs.length}] records processed on ${sobject}`);
-    this.ux.table(outputs, {colSep: '|', columns: outputColumns});
+    this.ux.table(result, {colSep: '|', columns: outputColumns});
 
-    */
     // Return an object to be displayed with --json
-    return { };
+    return { users: result };
   }
 }
