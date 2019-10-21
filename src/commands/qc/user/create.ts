@@ -118,7 +118,6 @@ export default class Create extends SfdxCommand {
       const sfdcUser = sfdcUsers[i];
       try {
         const userResult = await conn.create('User', sfdcUser);
-        console.log(JSON.stringify(userResult));
         result.push({
           username: sfdcUser.username,
           success: (userResult as any).success
