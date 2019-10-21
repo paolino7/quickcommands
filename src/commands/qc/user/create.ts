@@ -49,6 +49,7 @@ export default class Create extends SfdxCommand {
       localeSidKey: string;
       emailEncodingKey: string;
       languageLocaleKey: string;
+      active: boolean;
     }
 
     // this.org is guaranteed because requiresUsername=true, as opposed to supportsUsername
@@ -107,7 +108,8 @@ export default class Create extends SfdxCommand {
         profileId: profileObj? profileObj.Id: null,
         languageLocaleKey: user.languageLocaleKey,
         email: user.email,
-        userRoleId: roleObj ? roleObj.Id : null
+        userRoleId: roleObj ? roleObj.Id : null,
+        isActive: user.active
       }
     });
 
