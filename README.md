@@ -16,19 +16,17 @@ Some helpfull quickcommands tool to use with Salesforce
 * [Debugging your plugin](#debugging-your-plugin)
 <!-- tocstop -->
 <!-- install -->
-<!-- usage -->
 ```sh-session
-$ npm install -g quickcommands
-$ sfdx COMMAND
+$ sfdx plugins:install https://github.com/paolino7/quickcommands
+$ sfdx qc
 running command...
 $ sfdx (-v|--version|version)
 quickcommands/0.0.0 darwin-x64 node-v12.3.1
-$ sfdx --help [COMMAND]
+$ sfdx --help [qc]
 USAGE
-  $ sfdx COMMAND
+  $ sfdx qc
 ...
 ```
-<!-- usagestop -->
 <!-- commands -->
 * [`sfdx qc:data:upsert -f <filepath> -s <string> -i <string> [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qcdataupsert--f-filepath--s-string--i-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx qc:user:create -f <filepath> [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qcusercreate--f-filepath--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)

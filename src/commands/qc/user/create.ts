@@ -1,5 +1,5 @@
 import { flags, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError, User, UserFields, Org } from '@salesforce/core';
+import { Messages, SfdxError, UserFields, Org } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
 import { readFileSync } from 'fs';
 import { TableColumn } from 'cli-ux/lib/styled/table';
