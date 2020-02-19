@@ -1,0 +1,20 @@
+{
+  "commandDescription": "This command perform an upsert request of JSON array file resolving lookup with other records",
+  "nameFlagDescription": "name to print",
+  "sobjectFlagDescription": "sobjectFlagDescription",
+  "chunksizeFlagDescription": "chunksizeFlagDescription",
+  "resultformatFlagDescription": "resultformatFlagDescription",
+  "queryFlagDescription": "queryFlagDescription",
+  "filenameFlagDescription": "filenameFlagDescription",
+  "forceFlagDescription": "example boolean flag",
+  "jobidFlagDescription": "job id of bulk job",
+  "batchidFlagDescription": "bulk id of bulk job",
+  "errorNoOrgResults": "No results found for the org '%s'.",
+  "destinationdirFlagDescription": "destinationdirFlagDescription",
+  "limitFlagDescription": "limitFlagDescription",
+  "whereclauseFlagDescription": "whereclauseFlagDescription",
+  "configfileFlagDescription": "configfileFlagDescription",
+  "endpoint": "Endpoint to call",
+  "httpmethod": "Http method",
+  "httpbody": "Body of the request"
+}

@@ -28,21 +28,23 @@ USAGE
 ...
 ```
 <!-- commands -->
-* [`sfdx qc:call:execute [-e <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qccallexecute--e-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+* [`sfdx qc:call:execute [-e <string>] [-m <string>] [-b <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qccallexecute--e-string--m-string--b-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx qc:data:upsert -f <filepath> -s <string> -i <string> [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qcdataupsert--f-filepath--s-string--i-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx qc:user:create -f <filepath> [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qcusercreate--f-filepath--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 
-## `sfdx qc:call:execute [-e <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+## `sfdx qc:call:execute [-e <string>] [-m <string>] [-b <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 
 This command perform an upsert request of JSON array file resolving lookup with other records
 
 ```
 USAGE
-  $ sfdx qc:call:execute [-e <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel 
-  trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+  $ sfdx qc:call:execute [-e <string>] [-m <string>] [-b <string>] [-u <string>] [--apiversion <string>] [--json] 
+  [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
 
 OPTIONS
+  -b, --body=body                                                                   Body of the request
   -e, --url=url                                                                     Endpoint to call
+  -m, --method=method                                                               Http method
 
   -u, --targetusername=targetusername                                               username or alias for the target
                                                                                     org; overrides default target org
@@ -56,7 +58,7 @@ OPTIONS
                                                                                     this command invocation
 
 EXAMPLE
-  $ sfdx qc:call:execute --endpoint "/services/data/v48.0/tooling" --targetusername myOrg@example.com
+  $ sfdx qc:call:execute --url "/services/data/v48.0/tooling" --targetusername myOrg@example.com
        {
          "tooling": "/services/data/v48.0/tooling",
          "metadata": "/services/data/v48.0/metadata"
