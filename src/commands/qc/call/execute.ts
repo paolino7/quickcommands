@@ -42,7 +42,6 @@ export default class Execute extends SfdxCommand {
     const conn = this.org.getConnection();
     const uri = this.flags.url || '/';
 
-    console.log(`Base URL: `, conn.baseUrl());
     const url = conn.baseUrl().concat(uri);
     console.log(`Complete URL: `, url);
 
