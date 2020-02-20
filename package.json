@@ -5,6 +5,7 @@
   "author": "Paolo Zirotti",
   "bugs": "https://github.com/paolino7/quickcommands/issues",
   "dependencies": {
+    "@babel/parser": "^7.8.4",
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.14.0",
     "@oclif/errors": "^1.2.2",
@@ -25,6 +26,7 @@
     "@types/chai": "^4.2.9",
     "@types/mocha": "^7.0.1",
     "@types/node": "^13.7.2",
+    "@types/request-promise": "^4.1.45",
     "chai": "^4.2.0",
     "globby": "^11.0.0",
     "mocha": "^7.0.1",

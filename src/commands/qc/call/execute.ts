@@ -1,7 +1,8 @@
 import { flags, SfdxCommand } from "@salesforce/command";
 import { Messages } from "@salesforce/core";
 import { AnyJson } from "@salesforce/ts-types";
-import request = require("request-promise");
+import { OptionsWithUri } from "request-promise";
+import requestPromise = require("request-promise");
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
@@ -40,26 +41,42 @@ export default class Execute extends SfdxCommand {
   public async run(): Promise<AnyJson> {
     // this.org is guaranteed because requiresUsername=true, as opposed to supportsUsername
     const conn = this.org.getConnection();
-    const uri = this.flags.url || '/';
+    const uri: string = this.flags.url || '/';
 
-    const url = conn.baseUrl().concat(uri);
-    console.log(`Complete URL: `, url);
-
-    const options = {
+    let url: string;
+    if(uri.startsWith('/services')) {
+      url = conn.instanceUrl.concat(uri);
+    } else {
+      url = conn.baseUrl().concat(uri);
+    }
+    
+    let options: OptionsWithUri = {
       method: 'GET',
       uri: url,
       headers: {
         "Authorization": "Bearer " + conn.accessToken
       },
-
       json: true // Automatically parses the JSON string in the response
     };
 
-    const uriOutput = await request(options);
-    //const uriOutput = await conn.request(uri, );
-    this.ux.styledJSON(uriOutput);
+    const callResponse = await requestPromise(options).then( body => {
+      return body;
+    }).catch(async err => {
+      if(err.statusCode === 401) {
+        this.org.refreshAuth();
+        options.headers = {"Authorization": "Bearer " + conn.accessToken};
+        await requestPromise(options).then(res => {
+          return res;
+        }).catch(err2 => {
+          return err2;
+        });
+      }
+      return err;
+    });
+
+    this.ux.styledJSON(callResponse);
 
     // Return an object to be displayed with --json
-    return { uriOutput };
+    return { callResponse };
   }
 }
