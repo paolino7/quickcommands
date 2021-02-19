@@ -1,7 +1,7 @@
 node_modules/
 package-lock.json
 yarn-error.log
-.DS_Store
+**/.DS_Store
 .images/
 .vscode/
 .circleci/
