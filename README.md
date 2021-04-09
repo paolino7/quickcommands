@@ -29,6 +29,7 @@ USAGE
 ```
 <!-- commands -->
 * [`sfdx qc:call:execute [-e <string>] [-m <string>] [-b <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qccallexecute--e-string--m-string--b-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
+* [`sfdx qc:data:bulk:query -q <string> [-r <string>] [-d <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qcdatabulkquery--q-string--r-string--d-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx qc:data:upsert -f <filepath> -s <string> -i <string> [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qcdataupsert--f-filepath--s-string--i-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx qc:file:download -n <string> [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qcfiledownload--n-string--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
 * [`sfdx qc:user:create -f <filepath> [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`](#sfdx-qcusercreate--f-filepath--u-string---apiversion-string---json---loglevel-tracedebuginfowarnerrorfataltracedebuginfowarnerrorfatal)
@@ -67,6 +68,41 @@ EXAMPLE
 ```
 
 _See code: [lib/commands/qc/call/execute.js](https://github.com/paolino7/quickcommands/blob/v0.0.0/lib/commands/qc/call/execute.js)_
+
+## `sfdx qc:data:bulk:query -q <string> [-r <string>] [-d <string>] [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
+
+TODO: Command description
+
+```
+USAGE
+  $ sfdx qc:data:bulk:query -q <string> [-r <string>] [-d <string>] [-u <string>] [--apiversion <string>] [--json] 
+  [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]
+
+OPTIONS
+  -d, --outputdir=outputdir                                                         Output dir
+
+  -q, --query=query                                                                 (required) Query to execute on bulk
+                                                                                    API
+
+  -r, --resultformat=json|csv                                                       [default: json]
+                                                                                    resultformatFlagDescription
+
+  -u, --targetusername=targetusername                                               username or alias for the target
+                                                                                    org; overrides default target org
+
+  --apiversion=apiversion                                                           override the api version used for
+                                                                                    api requests made by this command
+
+  --json                                                                            format output as json
+
+  --loglevel=(trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)  [default: warn] logging level for
+                                                                                    this command invocation
+
+EXAMPLE
+  TODO: command example
+```
+
+_See code: [lib/commands/qc/data/bulk/query.js](https://github.com/paolino7/quickcommands/blob/v0.0.0/lib/commands/qc/data/bulk/query.js)_
 
 ## `sfdx qc:data:upsert -f <filepath> -s <string> -i <string> [-u <string>] [--apiversion <string>] [--json] [--loglevel trace|debug|info|warn|error|fatal|TRACE|DEBUG|INFO|WARN|ERROR|FATAL]`
 

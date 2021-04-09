@@ -2,7 +2,6 @@ import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError, UserFields, Org } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
 import { readFileSync } from 'fs';
-import { TableColumn } from 'cli-ux/lib/styled/table';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
@@ -132,7 +131,7 @@ export default class Create extends SfdxCommand {
       
     }
 
-    const outputColumns: Partial<TableColumn>[] = [{key: 'username', label: 'Username'}, {key: 'success', label: 'Success'},{key: 'errors', label: 'Errors'}];
+    const outputColumns = [{key: 'username', label: 'Username'}, {key: 'success', label: 'Success'},{key: 'errors', label: 'Errors'}];
     
     //TODO: Use better outputs
     this.ux.table(result, {colSep: '|', columns: outputColumns});

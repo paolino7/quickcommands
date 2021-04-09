@@ -2,7 +2,6 @@ import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import { AnyJson, toAnyJson } from '@salesforce/ts-types';
 import { readFileSync } from 'fs';
-import { TableColumn } from 'cli-ux/lib/styled/table';
 
 // Initialize Messages with the current plugin directory
 Messages.importMessagesDirectory(__dirname);
@@ -116,7 +115,7 @@ export default class Upsert extends SfdxCommand {
     }
 
 
-    const outputColumns: Partial<TableColumn>[] = [{key: 'id', label: 'ID'}, {key: 'success', label: 'Success'},{key: 'errors', label: 'Errors'}, {key: 'created', label: 'Created'}];
+    const outputColumns = [{key: 'id', label: 'ID'}, {key: 'success', label: 'Success'},{key: 'errors', label: 'Errors'}, {key: 'created', label: 'Created'}];
     
     const outputs: UpsertResult[] = [];
     
